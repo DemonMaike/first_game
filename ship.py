@@ -10,14 +10,19 @@ class Ship:
         self.rect.midbottom = self.screen_rect.midbottom
         self.moving_right = False
         self.moving_left = False
+        self.settigs = ai_game.settigs
+        self.x = float(self.rect.x)
     
 
     def blime(self):
         self.screen.blit(self.image, self.rect)
     
     def update(self):
+        '''Обнавляет позицию корабля с учётом флагов'''
+        # Обновляет x, не rect
+
         if self.moving_right:
-            self.rect.x += 1
+            self.x += self.settigs.ship_speed
 
         if self.moving_left:
-            self.rect.x -= 1
+            self.x -= self.settigs.ship_speed
