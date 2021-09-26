@@ -3,6 +3,7 @@ import pygame
 
 from setting import Setting
 from ship import Ship
+from bullet import Bullet
 
 class AlienInvasion:
     """Класс для управлением повидением и ресурсами игры."""
@@ -15,11 +16,13 @@ class AlienInvasion:
         self.settings.screen_width = self.screen.get_rect().width
         pygame.display.set_caption("Alien Invasion")
         self.ship = Ship(self)
+        self.bullets = pygame.sprite.Group()
 
     def run_game(self):
         """Запуск основного цикла игры."""
         while True:
             self._check_events()
+            self.bullets.update()
             self._update_screen()
 
             #отображение прорисованного экрана
@@ -34,6 +37,12 @@ class AlienInvasion:
                 self._check_keydown_events(event)
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)
+           
+            
+    def _fire_bullet(self):
+        """Создание снаряда и включение его в группу bullets"""
+        new_bullet = Bullet(self)
+        self.bullets.add(new_bullet)
 
     def _check_keydown_events(self, event):
         """Обрабатывает нажатия кнопок"""
@@ -43,6 +52,8 @@ class AlienInvasion:
             self.ship.moving_left = True
         elif event.key == pygame.K_q:
             sys.exit()
+        elif event.key == pygame.K_SPACE:
+               self._fire_bullet()
     
     def _check_keyup_events(self, event):
         """Обрабатывает событие отпущенной кнопки"""
@@ -56,6 +67,8 @@ class AlienInvasion:
         self.screen.fill(self.settings.bg_color)
         self.ship.blime()
         self.ship.update()
+        for bullet in self.bullets.sprites():
+            bullet.draw_bullet()
 
 
 if __name__ == '__main__':
