@@ -23,8 +23,11 @@ class AlienInvasion:
         while True:
             self._check_events()
             self.bullets.update()
-            self._update_screen()
-
+            self._update_screen() 
+            #удаляем снаряды за пределом поля
+            for bullet in self.bullets.copy():
+                if bullet.rect.bottom <= 0:
+                    self.bullets.remove(bullet)
             #отображение прорисованного экрана
             pygame.display.flip()
 
@@ -37,12 +40,6 @@ class AlienInvasion:
                 self._check_keydown_events(event)
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)
-           
-            
-    def _fire_bullet(self):
-        """Создание снаряда и включение его в группу bullets"""
-        new_bullet = Bullet(self)
-        self.bullets.add(new_bullet)
 
     def _check_keydown_events(self, event):
         """Обрабатывает нажатия кнопок"""
@@ -54,6 +51,12 @@ class AlienInvasion:
             sys.exit()
         elif event.key == pygame.K_SPACE:
                self._fire_bullet()
+    
+    def _fire_bullet(self):
+        """Создание снаряда и включение его в группу bullets"""
+        if len(self.bullets) < self.settings.bullet_allowed:
+            new_bullet = Bullet(self)
+            self.bullets.add(new_bullet)
     
     def _check_keyup_events(self, event):
         """Обрабатывает событие отпущенной кнопки"""
@@ -69,7 +72,6 @@ class AlienInvasion:
         self.ship.update()
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
-
 
 if __name__ == '__main__':
     ai = AlienInvasion()
