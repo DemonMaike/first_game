@@ -55,13 +55,32 @@ class AlienInvasion:
         while True:
             self._check_events()
             self.bullets.update()
-            self._update_screen() 
+            self._update_screen()
+            self._update_aliens()
+            self._check_fleet_edges()
             #удаляем снаряды за пределом поля
             for bullet in self.bullets.copy():
                 if bullet.rect.bottom <= 0:
                     self.bullets.remove(bullet)
             #отображение прорисованного экрана
             pygame.display.flip()
+    
+    def _check_fleet_edges(self):
+        """Реагирует на достижение пришельцем края экрана"""
+        for alien in self.aliens.sprites():
+            if alien.check_edges():
+                self._change_fleet_direction()
+                break
+    
+    def _change_fleet_direction(self):
+        """Опускает весь флот и меняет направление его движения"""
+        for alien in self.aliens.sprites():
+            alien.rect.y += self.settings.fleet_drop_speed
+        self.settings.fleet_direction *= -1
+    
+    def _update_aliens(self):
+        """Обновляет позиции всех пришельцев во флотею"""
+        self.aliens.update()
 
     def _check_events(self):
         """обрабатывает действия в игре, например нажать на крестик"""
