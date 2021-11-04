@@ -8,6 +8,7 @@ from bullet import Bullet
 from alien import Alien
 from game_stats import GameStats
 from button import Button
+from scoreboard import Scoreboard
 
 class AlienInvasion:
     """Класс для управлением повидением и ресурсами игры."""
@@ -20,6 +21,7 @@ class AlienInvasion:
         self.settings.screen_height = self.screen.get_rect().height
         self.settings.screen_width = self.screen.get_rect().width
         pygame.display.set_caption("Alien Invasion")
+        self.sb = Scoreboard(self)
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
@@ -39,6 +41,7 @@ class AlienInvasion:
             self.ship.center_ship()
         else:
             self.stats.game_active = False
+            pygame.mouse.set_visible(True)
 
 
         # Пауза
@@ -99,6 +102,7 @@ class AlienInvasion:
             self.bullets, self.aliens, True, True)
 
         if not self.aliens:
+            self.settings.incrace_speed()
             self.bullets.empty()
             self._create_fleet()
 
@@ -132,6 +136,24 @@ class AlienInvasion:
                 self._check_keydown_events(event)
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                self._check_play_down(mouse_pos)
+    
+    def _check_play_down(self, mouse_pos):
+        """запускает новую игру после нажатия кнопки Play"""
+        button_clicked = self.play_button.rect.collidepoint(mouse_pos)
+        if button_clicked and not self.stats.game_active:
+            #Сброс игровых настроек
+            self.settings.init_start_setting()
+            self.stats.reset_stats()
+            self.stats.game_active = True
+            self.aliens.empty()
+            self.bullets.empty()
+            self._create_fleet()
+            self.ship.center_ship()
+
+            pygame.mouse.set_visible(False)
 
     def _check_keydown_events(self, event):
         """Обрабатывает нажатия кнопок"""
@@ -165,7 +187,7 @@ class AlienInvasion:
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         self.aliens.draw(self.screen)
-
+        self.sb.show_score()
         if not self.stats.game_active:
             self.play_button.draw_button()
 
