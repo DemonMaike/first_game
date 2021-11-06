@@ -1,8 +1,10 @@
 import pygame
+from pygame.sprite import Sprite
 
-class Ship:
+class Ship(Sprite):
     """Класс для управления караблём"""
     def __init__(self, ai_game):
+        super().__init__()
         self.screen  = ai_game.screen
         self.screen_rect = ai_game.screen.get_rect()
         self.image = pygame.image.load('./image/ship.bmp')
@@ -12,6 +14,7 @@ class Ship:
         self.moving_left = False
         self.settings = ai_game.settings
         self.x = float(self.rect.x)
+
     
 
     def blime(self):
